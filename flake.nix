@@ -1,76 +1,103 @@
 {
-  # Top-level metadata and configuration for this NixOS system flake.
-  description = "NixOS desktop configuration with SwayFX compositor and Steam, using Home Manager.";
+  description = "NixOS desktop system with SwayFX, Steam, HM, Unstable overlay, and modular best practices.";
 
   ################################
-  ## Flake inputs
+  ## FLAKE INPUTS
   ################################
   inputs = {
-    # Stable NixOS 25.05
+    # Stable (system base)
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
 
-    # Unstable Nixpkgs, used for select packages (e.g. Discord)
+    # Unstable (for Discord, cutting-edge libs, etc.)
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # Home Manager for per-user configuration
+    # Home Manager
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Kept for now (not actively used) in case you later want wayland overlay pkgs
+    # Optional wayland overlays (unused now)
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
   };
 
   ################################
-  ## Flake outputs
+  ## FLAKE OUTPUTS
   ################################
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, nixpkgs-wayland, ... }:
     let
       system = "x86_64-linux";
 
-      # Helper to build a NixOS system with shared specialArgs
-      mkSystem = modules: nixpkgs.lib.nixosSystem {
-        inherit system;
-
-        # Make inputs available to all modules
-        specialArgs = {
+      # Builder helper
+      mkSystem = modules:
+        nixpkgs.lib.nixosSystem {
           inherit system;
-          inputs = {
-            inherit self nixpkgs nixpkgs-unstable home-manager nixpkgs-wayland;
-          };
-        };
 
-        modules = modules;
-      };
+          specialArgs = {
+            inherit system;
+            inputs = {
+              inherit self nixpkgs nixpkgs-unstable home-manager nixpkgs-wayland;
+            };
+          };
+
+          modules = modules;
+        };
     in {
-      ########################################
-      ## Desktop machine configuration
-      ########################################
+      ############################################################
+      ## NixOS HOST: desktop-nixos
+      ############################################################
       nixosConfigurations.desktop-nixos = mkSystem [
-        # Host: hardware, filesystems, users, services, etc.
+
+        # Host config
         ./hosts/desktop.nix
 
-        # System-level modules (strict separation):
+        # System-level modules
         ./modules/system-packages.nix
         ./modules/unstable-packages.nix
         ./modules/sway.nix
         ./modules/steam.nix
         ./modules/dms.nix
 
-        # Home Manager integration
+        ###############################################
+        ## HOME MANAGER INTEGRATION
+        ###############################################
         home-manager.nixosModules.home-manager
 
-        # User "chris" home configuration
+        ###############################################
+        ## CRITICAL FIX — ensure HM sees unstable overlay
+        ###############################################
         {
-          home-manager.users.chris = import ./home/desktop-user.nix;
-        }
+          nixpkgs.overlays = [
+            (final: prev: {
+              unstable = import nixpkgs-unstable {
+                inherit system;
+                config = prev.config;
+              };
+            })
+          ];
 
-        # Extra args for Home Manager
-        {
+          home-manager.sharedModules = [
+            {
+              # Make the SAME overlay available in HM
+              nixpkgs.overlays = [
+                (final: prev: {
+                  unstable = import nixpkgs-unstable {
+                    inherit system;
+                    config = prev.config;
+                  };
+                })
+              ];
+            }
+          ];
+
+          # HM user definition
+          home-manager.users.chris = import ./home/desktop-user.nix;
+
+          # Extra
           home-manager.extraSpecialArgs = { inherit system; };
           home-manager.backupFileExtension = "hm_bak";
         }
       ];
     };
 }
+

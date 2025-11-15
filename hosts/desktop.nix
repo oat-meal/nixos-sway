@@ -19,9 +19,6 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Allow unfree globally (Steam, Discord, etc.)
-  nixpkgs.config.allowUnfree = true;
-
   ################################
   ## Locale & time
   ################################
@@ -37,7 +34,6 @@
   ################################
   ## Filesystems
   ################################
-  # Root Btrfs volume with multiple subvolumes.
   fileSystems."/" = {
     device = "UUID=547e9d27-e12b-48a7-a60c-291ef37587ec";
     fsType = "btrfs";
@@ -101,7 +97,7 @@
     enable = true;
     settings = {
       default_session = {
-        # Launch Sway (SwayFX) via tuigreet
+        # Launch Sway via tuigreet
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd sway";
         user = "chris";
       };
@@ -116,6 +112,20 @@
 
   # Temporary workaround from earlier build issue; can be revisited.
   services.logrotate.enable = false;
+
+  ################################
+  ## System-wide nixpkgs config
+  ################################
+  nixpkgs.config = {
+    allowUnfree = true;
+
+    # While we’re debugging, keep this broad.
+    # If you want to lock this down to a predicate later, we can.
+    # allowUnfreePredicate = pkg:
+    #   builtins.elem (pkgs.lib.getName pkg) [
+    #     "discord"
+    #   ];
+  };
 
   ################################
   ## User configuration
@@ -162,3 +172,4 @@
     wireplumber.enable = true;
   };
 }
+
