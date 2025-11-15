@@ -2,16 +2,10 @@
 
 {
   ########################################
-  ## Global System Packages (Stable)
-  ##
-  ## This module is the single source of truth
-  ## for system-wide packages on this host.
+  ## Global system packages (stable)
   ########################################
-
   environment.systemPackages = with pkgs; [
-    #############################
-    # Core CLI / Admin Tools
-    #############################
+    ######## Core CLI / admin ########
     git
     wget
     curl
@@ -21,29 +15,23 @@
     lsb-release
     btrfs-progs
 
-    #############################
-    # Shell / Editors / Terminals
-    #############################
+    ######## Shell / editors / terminals ########
     zsh
     neovim
     alacritty
 
-    #############################
-    # Audio / Volume Utilities
-    #############################
-    pavucontrol       # GUI audio mixer
-    pamixer           # Terminal volume control
-    pulseaudio        # pactl/pacmd tools
-    alsa-utils        # alsamixer, speaker-test
+    ######## Audio tools ########
+    pavucontrol
+    pamixer
+    pulseaudio      # pactl, pacmd, etc.
+    alsa-utils      # alsamixer, speaker-test
 
-    #############################
-    # Wayland / Xwayland / Desktop
-    #############################
+    ######## Wayland / desktop plumbing ########
     wayland
     xwayland
     xwayland-satellite
 
-    # Menu launcher, bar, notifications, wallpapers, etc.
+    # Bar, launcher, notifications, wallpapers, lockscreen, screenshots
     waybar
     wofi
     mako
@@ -61,9 +49,7 @@
     xorg.libXext
     xorg.libxcb
 
-    #############################
-    # Gaming / GPU / Vulkan
-    #############################
+    ######## Gaming / GPU / Vulkan ########
     mangohud
     gamescope
     vulkan-tools
@@ -71,18 +57,9 @@
     vulkan-validation-layers
     libdrm
     libxkbcommon
+    (pkgs.pkgsi686Linux.vulkan-loader)  # 32-bit Vulkan for Proton
 
-    # 32-bit Vulkan loader for Proton / 32-bit games
-    (pkgs.pkgsi686Linux.vulkan-loader)
-
-    #############################
-    # Multimedia & Compat Libraries
-    #
-    # Note:
-    #   These are often pulled in as dependencies, but
-    #   are listed explicitly here for transparency and
-    #   easier debugging if issues arise.
-    #############################
+    ######## Multimedia / misc libs ########
     ffmpeg
     libGL
     glib
