@@ -5,21 +5,19 @@ let
     pname = "DankMaterialShell";
     version = "latest";
 
-    # Fetch from GitHub (DMS is not in nixpkgs)
+    # Fetch from upstream GitHub repo
     src = pkgs.fetchFromGitHub {
       owner = "AvengeMedia";
       repo = "DankMaterialShell";
-      rev = "main";           # You can pin a commit later for reproducibility
-      sha256 = lib.fakeSha256;  # Run nix build once to get the actual hash
+      rev = "main";  # you can pin to a specific commit later
+      sha256 = lib.fakeSha256; # replace with real hash after first build
     };
 
     propagatedBuildInputs = with pkgs.python3.pkgs; [
       pygobject3
-      # Required GTK libs
       pycairo
     ];
 
-    # DMS is a pure Python application—no native build phase
     format = "other";
     installPhase = ''
       mkdir -p $out/bin
@@ -30,21 +28,27 @@ let
   };
 in
 {
-  options.desktop.dms.enable = lib.mkEnableOption "Enable DankMaterialShell launcher";
+  ################################
+  ## Make DMS available
+  ################################
+  environment.systemPackages = [ dms ];
 
-  config = lib.mkIf config.desktop.dms.enable {
+  ################################
+  ## Optional Sway keybind
+  ################################
+  programs.sway.extraConfig = ''
+    # Launch Dank Material Shell
+    bindsym $mod+d exec "dms"
+  '';
 
-    ########################################
-    # Make `dms` available system-wide
-    ########################################
-    environment.systemPackages = [ dms ];
-
-    ########################################
-    # Add recommended Sway keybind
-    ########################################
-    programs.sway.extraConfig = ''
-      ### Launch Dank Material Shell
-      bindsym $mod+d exec "dms"
-    '';
+  ################################
+  ## Desktop entry (for wofi, etc.)
+  ################################
+  xdg.desktopEntries.dms = {
+    name = "Dank Material Shell";
+    exec = "dms";
+    icon = "applications-utilities";
+    type = "Application";
+    categories = [ "Utility" ];
   };
 }
