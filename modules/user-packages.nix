@@ -2,32 +2,23 @@
 
 {
   ########################################
-  ## Home-Manager User Packages
+  ## User packages (Home Manager)
   ##
-  ## These packages are installed only for the
-  ## "chris" user (via Home Manager), not system-wide.
+  ## Only applied to "chris" via
+  ##   home/desktop-user.nix
   ########################################
 
   home.packages = with pkgs; [
-    ################################
-    # Unstable Desktop Apps
-    ################################
-
-    # Discord from unstable:
-    #   - unstable often has a working hash/URL
-    #   - stable Discord frequently breaks
+    ######## Unstable desktop apps ########
+    # Discord from unstable because stable often breaks:
     pkgs.unstable.discord
 
-    ################################
-    # Stable GUI Applications
-    ################################
+    ######## Stable GUI apps ########
     firefox
     brave
     mpv
 
-    ################################
-    # User Tools / Utilities
-    ################################
+    ######## User tools ########
     wl-clipboard
     unzip
     htop
