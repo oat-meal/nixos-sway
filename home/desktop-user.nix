@@ -1,30 +1,24 @@
 { config, pkgs, ... }:
 
 {
-  ##############################################
-  ## Home Manager User Identity
-  ##############################################
-
+  ################################
+  ## Home Manager identity
+  ################################
   home.username = "chris";
   home.homeDirectory = "/home/chris";
   home.stateVersion = "25.05";
 
-  ##############################################
-  ## Imports (User Packages + Theme)
-  ##############################################
-
+  ################################
+  ## Imports: user-only modules
+  ################################
   imports = [
-    # User-level package list (GUI apps, tools, etc.)
     ../modules/user-packages.nix
-
-    # Theming, GTK, icons, cursors, bar styling, etc.
     ./theme.nix
   ];
 
-  ##############################################
-  ## Shell & Editor
-  ##############################################
-
+  ################################
+  ## Shell & editor
+  ################################
   programs.neovim.enable = true;
   programs.alacritty.enable = true;
 
@@ -40,21 +34,19 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
-    # Add ~/.local/bin to PATH inside Zsh
     initExtra = ''
       export PATH="$HOME/.local/bin:$PATH"
     '';
   };
 
-  # Add ~/.local/bin globally to PATH for this user
+  # Add ~/.local/bin to PATH via Home Manager
   home.sessionPath = [
     "$HOME/.local/bin"
   ];
 
-  ##############################################
-  ## GPG Agent (User-Level)
-  ##############################################
-
+  ################################
+  ## GPG Agent (user-level)
+  ################################
   services.gpg-agent = {
     enable = true;
     pinentryPackage = pkgs.pinentry-gtk2;
