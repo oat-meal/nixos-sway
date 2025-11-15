@@ -1,37 +1,43 @@
 { config, pkgs, lib, ... }:
 
 {
-  ########################################
-  ## System Core
-  ########################################
+  ################################
+  ## Import system modules
+  ################################
+  imports = [
+    ../modules/system-packages.nix
+    ../modules/unstable-packages.nix
+    ../modules/sway.nix
+    ../modules/steam.nix
+    ../modules/dms.nix
+  ];
 
+  ################################
+  ## Core system
+  ################################
   system.stateVersion = "25.05";
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Allow unfree packages globally (required for e.g. Discord, Steam, etc.)
+  # Allow unfree globally (Steam, Discord, etc.)
   nixpkgs.config.allowUnfree = true;
 
-  ########################################
-  ## Locale & Time
-  ########################################
-
+  ################################
+  ## Locale & time
+  ################################
   i18n.defaultLocale = "en_US.UTF-8";
-  time.timeZone = "America/Chicago"; # Adjust if needed
+  time.timeZone = "America/Chicago";
 
-  ########################################
+  ################################
   ## Bootloader (UEFI + systemd-boot)
-  ########################################
-
+  ################################
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  ########################################
-  ## Filesystem Configuration
-  ########################################
-  # EFI partition: /dev/nvme2n1p1 (FAT32, 2GiB, flags boot,esp)
-  # Root partition: /dev/nvme2n1p2 (Btrfs with subvols @, @home, @nix, @log, @swap)
-
+  ################################
+  ## Filesystems
+  ################################
+  # Root Btrfs volume with multiple subvolumes.
   fileSystems."/" = {
     device = "UUID=547e9d27-e12b-48a7-a60c-291ef37587ec";
     fsType = "btrfs";
@@ -67,16 +73,14 @@
     options = [ "subvol=@swap" ];
   };
 
-  # Optional: swap file on @swap subvolume
+  # Optional swap file on @swap
   # swapDevices = [
   #   { file = "/swap/swapfile"; }
   # ];
 
-  ########################################
-  ## Storage Pool (Btrfs NVMe pool)
-  ########################################
-
-  # Mount the main storage pool at /storage
+  ################################
+  ## Storage pool (Btrfs NVMe pool)
+  ################################
   fileSystems."/storage" = {
     device = "UUID=5462bbac-d14a-4189-8ca8-aa07cd026c86";
     fsType = "btrfs";
@@ -90,35 +94,32 @@
     ];
   };
 
-  ########################################
-  ## Display Manager: greetd + tuigreet
-  ########################################
-
+  ################################
+  ## Display manager: greetd + tuigreet
+  ################################
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        # Start Sway (via SwayFX) from greetd
+        # Launch Sway (SwayFX) via tuigreet
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd sway";
         user = "chris";
       };
     };
   };
 
-  ########################################
-  ## Hostname & Networking
-  ########################################
-
+  ################################
+  ## Networking & host identity
+  ################################
   networking.hostName = "desktop-nixos";
   networking.networkmanager.enable = true;
 
-  # Temporary workaround for a previous build error; safe to revisit later.
+  # Temporary workaround from earlier build issue; can be revisited.
   services.logrotate.enable = false;
 
-  ########################################
-  ## User Configuration
-  ########################################
-
+  ################################
+  ## User configuration
+  ################################
   users.users.chris = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" "audio" "video" "dialout" "uucp" ];
@@ -126,33 +127,28 @@
     ignoreShellProgramCheck = true;
   };
 
-  # Enable Zsh support at the system level
   programs.zsh.enable = true;
 
-  ########################################
-  ## Hardware & Services
-  ########################################
-
+  ################################
+  ## Hardware & services
+  ################################
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
-  # Firmware for various devices (Wi-Fi, GPU, etc.)
   hardware.enableRedistributableFirmware = true;
 
-  ########################################
+  ################################
   ## Fonts
-  ########################################
-
+  ################################
   fonts = {
     packages = with pkgs; [
       nerd-fonts.jetbrains-mono
     ];
   };
 
-  ########################################
-  ## Audio Stack (PipeWire)
-  ########################################
-
+  ################################
+  ## Audio stack (PipeWire)
+  ################################
   services.pipewire = {
     enable = true;
 
@@ -163,7 +159,6 @@
 
     pulse.enable = true;
     jack.enable = true;
-
     wireplumber.enable = true;
   };
 }
