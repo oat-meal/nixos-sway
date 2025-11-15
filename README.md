@@ -384,19 +384,10 @@ To add a new module:
 
 # 🎉 Final Notes
 
-This repo is now:
+This repo is hopefully:
 
 * **Strictly modular**
 * **Sysadmin-friendly**
 * **Safe to maintain long-term**
-* **Easy to extend to multiple hosts** (like your upcoming NixOS server)
+* **Easy to extend to multiple hosts** (like adding homelab NixOS servers/laptops etc)
 * **Aligned with NixOS 25.05 best practices**
-
-If you want, I can also generate:
-
-* A server-ready minimal module set
-* A laptop host variant
-* Automatic hardware configuration detection module
-* A flake template generator (`nix flake init` style)
-
-Just tell me!
