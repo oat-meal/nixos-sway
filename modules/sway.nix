@@ -1,18 +1,15 @@
 { config, pkgs, lib, ... }:
 
 {
-  ########################################
-  ## Sway (SwayFX) Compositor
-  ########################################
-
+  ################################
+  ## Sway (SwayFX) compositor
+  ################################
   programs.sway = {
     enable = true;
     package = pkgs.swayfx;
 
-    # Provide GTK integration inside the wrapper
     wrapperFeatures.gtk = true;
 
-    # Extra environment variables for Wayland sessions
     extraSessionCommands = ''
       export XDG_SESSION_TYPE=wayland
       export MOZ_ENABLE_WAYLAND=1
@@ -21,17 +18,6 @@
     '';
   };
 
-  ########################################
-  ## Optional greetd override
-  ##
-  ## NOTE:
-  ##   Your main greetd config is in hosts/desktop.nix.
-  ##   Keep these lines commented unless you decide to
-  ##   centralize greetd logic here instead.
-  ########################################
-
-  # services.greetd.settings.default_session = {
-  #   command = "${pkgs.swayfx}/bin/sway";
-  #   user = "chris";
-  # };
+  # greetd integration lives in hosts/desktop.nix to keep all
+  # login/session logic in one place.
 }
