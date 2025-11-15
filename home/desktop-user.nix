@@ -18,7 +18,7 @@
     ../modules/user-packages.nix
 
     # Theming, GTK, icons, cursors, bar styling, etc.
-    ./noctalia.nix
+    ./theme.nix
   ];
 
   ##############################################
