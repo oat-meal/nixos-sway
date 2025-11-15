@@ -14,6 +14,7 @@
   imports = [
     ../modules/user-packages.nix
     ./theme.nix
+    ./dms.nix
   ];
 
   ################################

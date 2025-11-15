@@ -3,14 +3,14 @@
 let
   dms = pkgs.python3.pkgs.buildPythonApplication {
     pname = "DankMaterialShell";
-    version = "latest";
+    version = "main";
 
-    # Fetch from upstream GitHub repo
+    # Fetch from GitHub
     src = pkgs.fetchFromGitHub {
       owner = "AvengeMedia";
       repo = "DankMaterialShell";
-      rev = "main";  # you can pin to a specific commit later
-      sha256 = lib.fakeSha256; # replace with real hash after first build
+      rev = "main";                # optional: pin to specific commit later
+      sha256 = lib.fakeSha256;     # replace with real hash after first build
     };
 
     propagatedBuildInputs = with pkgs.python3.pkgs; [
@@ -19,6 +19,7 @@ let
     ];
 
     format = "other";
+
     installPhase = ''
       mkdir -p $out/bin
       cp -r . $out/
@@ -28,27 +29,14 @@ let
   };
 in
 {
-  ################################
-  ## Make DMS available
-  ################################
+  ###############################################
+  ## Make DMS available globally as "dms"
+  ###############################################
   environment.systemPackages = [ dms ];
 
-  ################################
-  ## Optional Sway keybind
-  ################################
-  programs.sway.extraConfig = ''
-    # Launch Dank Material Shell
-    bindsym $mod+d exec "dms"
-  '';
-
-  ################################
-  ## Desktop entry (for wofi, etc.)
-  ################################
-  xdg.desktopEntries.dms = {
-    name = "Dank Material Shell";
-    exec = "dms";
-    icon = "applications-utilities";
-    type = "Application";
-    categories = [ "Utility" ];
-  };
+  # NOTE:
+  # This module intentionally contains *no* Sway config
+  # and *no* .desktop entries. Those belong to user-level
+  # Home Manager configuration.
 }
+
