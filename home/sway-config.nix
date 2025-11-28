@@ -270,31 +270,34 @@
     
     # SwayFX-specific configuration for animations and effects
     extraConfig = ''
-      # TEMPORARILY DISABLED FOR WOFI TESTING
-      # SwayFX blur settings (Niri-inspired)
-      # blur enable
-      # blur_xray enable
-      # blur_passes 2
-      # blur_radius 5
-
+      # SwayFX effects for Niri-like modern appearance
+      blur enable
+      blur_xray enable
+      blur_passes 3
+      blur_radius 8
+      
       # Rounded corners like Niri
-      # corner_radius 12
+      corner_radius 12
+      
+      # Subtle shadows for depth perception  
+      shadows enable
+      shadows_on_csd enable
+      shadow_blur_radius 25
+      shadow_color #00000055
 
-      # Shadows for depth
-      # shadows enable
-      # shadows_on_csd enable
-      # shadow_blur_radius 20
-      # shadow_color #000000AA
+      # Dim inactive windows slightly for focus indication
+      default_dim_inactive 0.15
+      dim_inactive_colors.unfocused #000000AA
 
-      # Dim inactive windows slightly
-      # default_dim_inactive 0.1
-      # dim_inactive_colors.unfocused #000000AA
+      # Layer shell effects for modern UI elements
+      layer_effects "noctalia" blur enable; shadows enable; corner_radius 12;
+      layer_effects "notifications" blur enable; shadows enable; corner_radius 16;
+      layer_effects "wofi" blur enable; shadows enable; corner_radius 16;
+      layer_effects "launcher" blur disable; shadows disable;
 
-      # Layer shell blur for Noctalia shell and overlays
-      # layer_effects "noctalia" blur enable; shadows enable;
-      # layer_effects "notifications" blur enable; shadows enable;
-      # Don't apply effects to launcher layer shells
-      # layer_effects "launcher" blur disable; shadows disable;
+      # SwayFX animations (different syntax than Hyprland)
+      # Note: SwayFX has limited animation support compared to Hyprland
+      # Focus on visual effects instead
 
       # Smart gaps - hide gaps when only one window
       smart_gaps on
@@ -347,10 +350,17 @@
       for_window [app_id="heroic"] move container to workspace number 9
       for_window [class="bottles"] move container to workspace number 9
       
-      # Smart borders - exclude launchers and special windows
-      for_window [class=".*" title="^(?!wofi|rofi|dmenu).*"] border pixel 2
-      for_window [app_id="^(?!wofi|rofi|dmenu).*"] border none
+      # Niri-inspired window styling
+      for_window [class=".*"] border pixel 2, border_radius 12
+      for_window [app_id=".*"] border pixel 2, border_radius 12
+      
+      # Clean borders for specific apps
+      for_window [app_id="wofi|rofi|dmenu"] border none
       for_window [class="steam_app_.*"] border none
+      for_window [app_id="gamescope"] border none
+      
+      # Enhanced floating window appearance
+      for_window [floating] border pixel 3, shadow enable
     '';
   };
 
