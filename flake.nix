@@ -1,5 +1,5 @@
 {
-  description = "NixOS desktop system with SwayFX, Steam, HM, Unstable overlay, and modular best practices.";
+  description = "Personal NixOS desktop configuration with SwayFX, Home Manager, Noctalia shell, and modular structure";
 
   ################################
   ## FLAKE INPUTS
@@ -17,14 +17,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Optional wayland overlays (unused now)
-    nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
+
+    # Noctalia shell
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   ################################
   ## FLAKE OUTPUTS
   ################################
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, nixpkgs-wayland, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, noctalia, ... }:
     let
       system = "x86_64-linux";
 
@@ -36,7 +40,7 @@
           specialArgs = {
             inherit system;
             inputs = {
-              inherit self nixpkgs nixpkgs-unstable home-manager nixpkgs-wayland;
+              inherit self nixpkgs nixpkgs-unstable home-manager noctalia;
             };
           };
 
@@ -54,9 +58,14 @@
         # System-level modules
         ./modules/system-packages.nix
         ./modules/unstable-packages.nix
-        ./modules/sway.nix
         ./modules/steam.nix
-        ./modules/dms.nix
+        ./modules/noctalia.nix
+       # ./modules/usb-audio-fixes.nix
+        
+        # Experimental packages (absolute path for git-ignored files)
+      #  (if builtins.pathExists /etc/nixos/modules/experimental-packages.nix 
+     #    then /etc/nixos/modules/experimental-packages.nix 
+     #    else { })
 
         ###############################################
         ## HOME MANAGER INTEGRATION
@@ -94,7 +103,12 @@
           home-manager.users.chris = import ./home/desktop-user.nix;
 
           # Extra
-          home-manager.extraSpecialArgs = { inherit system; };
+          home-manager.extraSpecialArgs = { 
+            inherit system; 
+            inputs = {
+              inherit self nixpkgs nixpkgs-unstable home-manager noctalia;
+            };
+          };
           home-manager.backupFileExtension = "hm_bak";
         }
       ];

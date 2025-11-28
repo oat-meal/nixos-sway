@@ -15,10 +15,21 @@
     lsb-release
     btrfs-progs
 
+    ######## Networking / WiFi ########
+    iw                         # WiFi configuration tool
+    iwd                        # Modern WiFi daemon
+    networkmanagerapplet       # GUI for NetworkManager (nm-connection-editor)
+
+    ######## VPN / WireGuard ########
+   # wgnord
+  #  wireguard-tools
+   # openresolv
+
     ######## Shell / editors / terminals ########
     zsh
     neovim
     alacritty
+    claude-code
 
     ######## Audio tools ########
     pavucontrol
@@ -30,18 +41,19 @@
     wayland
     xwayland
     xwayland-satellite
+    swayfx
 
-    # Bar, launcher, notifications, wallpapers, lockscreen, screenshots
+    # Bar, launcher, notifications, lockscreen, screenshots
     waybar
     wofi
     mako
-    swww
     swaylock-effects
     grim
     slurp
     swappy
 
     # Cursor + X11 compatibility libs
+    catppuccin-cursors
     bibata-cursors
     xorg.libXcursor
     xorg.libX11

@@ -23,5 +23,9 @@
     unzip
     htop
     ripgrep
+    
+    ######## Hardware support ########
+    libusb1
+    lm_sensors
   ];
 }

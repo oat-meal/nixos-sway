@@ -3,3 +3,6 @@ result
 *.swm
 secrets/
 *.iso
+
+# Experimental packages - not tracked in git
+modules/experimental-packages.nix

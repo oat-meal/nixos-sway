@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   ################################
@@ -20,4 +20,5 @@
 
   # greetd integration lives in hosts/desktop.nix to keep all
   # login/session logic in one place.
+  # Sway configuration is handled by Home Manager in home/sway-config.nix
 }

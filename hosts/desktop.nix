@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   ################################
@@ -7,10 +7,10 @@
   imports = [
     ../modules/system-packages.nix
     ../modules/unstable-packages.nix
-    ../modules/sway.nix
     ../modules/steam.nix
-    ../modules/dms.nix
-  ];
+    ../modules/sway.nix
+    ../modules/noctalia.nix
+  ] ++ lib.optional (builtins.pathExists ../modules/experimental-packages.nix) ../modules/experimental-packages.nix;
 
   ################################
   ## Core system
@@ -23,16 +23,60 @@
   ## Locale & time
   ################################
   i18n.defaultLocale = "en_US.UTF-8";
-  time.timeZone = "America/Chicago";
+  time.timeZone = "America/Denver";
 
   ################################
   ## Bootloader (UEFI + systemd-boot)
   ################################
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  
+  ################################
+  ## Stable LTS kernel for hardware compatibility ##
+  ################################
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
+
+  ################################
+  ## Gaming-optimized kernel     ##
+  ################################
+  boot.kernelParams = [
+    # CPU performance optimizations (AMD-specific)
+    "amd_pstate=active"
+    # Memory optimizations for large games
+    "transparent_hugepage=always"
+    "hugepagesz=2M"
+    "default_hugepagesz=2M"
+    # Gaming-specific scheduler optimizations
+    "preempt=full" # Low-latency preemption for better frame times
+    # Audio latency reduction
+    "snd_hda_intel.power_save=0"
+    # USB polling rate optimization (1000Hz for gaming mice)
+    "usbhid.mousepoll=1"
+    # PCI optimizations for high-end hardware
+    "pci=pcie_bus_perf" # PCIe performance mode
+    # WiFi suspend/resume fix - prevent WiFi from deep sleep
+    "iwlwifi.power_save=0"
+    "ath11k_pci.power_save=0"
+    # Removed problematic parameters that interfere with WiFi detection:
+    # - mitigations=off (security risk)
+    # - intel_pstate=disable (wrong for AMD)
+    # - processor.max_cstate=1 (power hungry)
+    # - idle=poll (power hungry)
+    # - pci=realloc (PCIe conflicts)
+    # - acpi_enforce_resources=lax (hardware conflicts)
+    # - pcie_aspm=off (power management conflicts)
+  ];
+  
+  # CPU frequency scaling for gaming
+  powerManagement.cpuFreqGovernor = "performance";
+  
+  # Enable CPU microcode updates (AMD)
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   ################################
   ## Filesystems
+  ## NOTE: UUIDs below are hardware-specific and should be updated 
+  ##       for your system using `lsblk -f` or `blkid`
   ################################
   fileSystems."/" = {
     device = "UUID=547e9d27-e12b-48a7-a60c-291ef37587ec";
@@ -91,14 +135,14 @@
   };
 
   ################################
-  ## Display manager: greetd + tuigreet
+  ## Display manager: greetd + noctalia
   ################################
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        # Launch Sway via tuigreet
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd sway";
+        # Launch user's Home Manager Sway session
+        command = "sway";
         user = "chris";
       };
     };
@@ -109,9 +153,37 @@
   ################################
   networking.hostName = "desktop-nixos";
   networking.networkmanager.enable = true;
+  
+  # Enable advanced WiFi support
+  networking.networkmanager.wifi.backend = "wpa_supplicant";
+  networking.networkmanager.wifi.powersave = false;
+  
+  # Enable WiFi regulatory domain (helps with WiFi 7)
+  hardware.wirelessRegulatoryDatabase = true;
 
   # Temporary workaround from earlier build issue; can be revisited.
   services.logrotate.enable = false;
+  
+  ################################
+  ## USB Device Support
+  ################################
+  # Enable USB device support and permissions
+  services.udev.enable = true;
+  hardware.usb-modeswitch.enable = true;
+  
+  # USB device permissions for gaming peripherals and AIO coolers
+  services.udev.extraRules = ''
+    # ASUS ROG devices (AIO coolers, keyboards, etc.)
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="1aa2", TAG+="uaccess"
+    SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0b05", TAG+="uaccess"
+    
+    # USB HID devices for user access (gaming peripherals)
+    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0664", GROUP="input"
+    
+    # USB audio devices (headsets, DACs, AIO pump controls)
+    SUBSYSTEM=="usb", ATTRS{bInterfaceClass}=="01", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{bInterfaceClass}=="03", TAG+="uaccess"
+  '';
 
   ################################
   ## System-wide nixpkgs config
@@ -132,7 +204,7 @@
   ################################
   users.users.chris = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "audio" "video" "dialout" "uucp" ];
+    extraGroups = [ "wheel" "networkmanager" "audio" "video" "dialout" "uucp" "plugdev" "input" ];
     shell = pkgs.zsh;
     ignoreShellProgramCheck = true;
   };
@@ -144,9 +216,36 @@
   ################################
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
-
+  
+  # Hardware firmware support
   hardware.enableRedistributableFirmware = true;
+  hardware.firmware = with pkgs; [
+    # Comprehensive firmware for WiFi 7 support
+    linux-firmware
+    # Specific Qualcomm firmware (may help with QCNCM865)
+    wireless-regdb
+  ];
 
+  # Enable WiFi 7 specific configurations
+  boot.extraModulePackages = with config.boot.kernelPackages; [
+    # Ensure WiFi modules are available
+  ];
+
+  # Force load WiFi drivers (only load existing modules)
+  boot.kernelModules = [
+    # Available WiFi drivers in this kernel version
+    "iwlwifi"       # Intel WiFi (AX210/AX211 if present)
+    "ath11k_pci"    # Qualcomm WiFi 6E (available in kernel 6.12)
+    # "ath12k_pci"  # WiFi 7 - not available in this kernel version
+    # "mt7925e"     # MediaTek WiFi 7 - not available in this kernel version  
+    # "rtw89"       # Realtek WiFi 6/7 - driver exists but hardware not detected
+  ];
+
+  # Enable WiFi support
+  networking.wireless.enable = false;  # Use NetworkManager instead
+  # Note: iwd backend may not be available in NixOS 25.05, using default wpa_supplicant
+
+  
   ################################
   ## Fonts
   ################################
