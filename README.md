@@ -43,9 +43,9 @@ This repository provides a modular NixOS configuration for Wayland gaming and pr
 
 These steps assume:
 
-* You are installing NixOS 25.05
-* You have 2 NVMe drives (as per your system), but the instructions work on any layout
-* You will clone or copy this repo into `/etc/nixos` after partitioning
+* Installing NixOS 25.05
+* 2 NVMe drives (as per this system), but the instructions work on any layout
+* This repo will be cloned or copied into `/etc/nixos` after partitioning
 
 ---
 
@@ -67,9 +67,9 @@ timedatectl set-ntp true
 
 ## 2. Partitioning & Disk Setup
 
-**IMPORTANT**: This guide assumes you have already partitioned your disks. If you need partitioning instructions, see the [NixOS Installation Guide](https://nixos.org/manual/nixos/stable/index.html#sec-installation-partitioning).
+**IMPORTANT**: This guide assumes the disks have already been partitioned. For partitioning instructions, see the [NixOS Installation Guide](https://nixos.org/manual/nixos/stable/index.html#sec-installation-partitioning).
 
-### **View your disks and partitions**
+### **View disks and partitions**
 
 ```sh
 # View all block devices and filesystems
@@ -137,9 +137,9 @@ mount /dev/disk/by-uuid/YOUR-BOOT-UUID /mnt/boot
 mount -t btrfs -o compress=zstd /dev/disk/by-uuid/YOUR-STORAGE-UUID /mnt/storage
 ```
 
-**Example with actual UUIDs** (DO NOT copy these - use your own from `blkid`):
+**Example with actual UUIDs** (DO NOT copy these - get actual UUIDs from `blkid`):
 ```sh
-# Example only - these UUIDs will not match your system
+# Example only - these UUIDs will not match other systems
 mount -o subvol=@ /dev/disk/by-uuid/547e9d27-e12b-48a7-a60c-291ef37587ec /mnt
 mount -o subvol=@home /dev/disk/by-uuid/547e9d27-e12b-48a7-a60c-291ef37587ec /mnt/home
 mount /dev/disk/by-uuid/4BE5-47A3 /mnt/boot
@@ -153,8 +153,8 @@ mount -t btrfs -o compress=zstd /dev/disk/by-uuid/5462bbac-d14a-4189-8ca8-aa07cd
 Once disks are mounted:
 
 ```sh
-# Replace with your actual repository URL
-git clone https://github.com/your-username/nixos-sway.git /mnt/etc/nixos
+# Replace with the actual repository URL
+git clone https://github.com/username/nixos-sway.git /mnt/etc/nixos
 ```
 
 **Alternative methods:**
@@ -197,7 +197,7 @@ reboot
 ```
 
 **Post-reboot verification:**
-- Verify you can log in as user `chris` (password set during installation)
+- Verify login as user `chris` works (password set during installation)
 - Verify Sway starts automatically via greetd
 - Test basic functionality before proceeding
 
@@ -544,11 +544,11 @@ sudo nixos-rebuild switch --flake /etc/nixos#desktop-nixos
 
 To add a new module:
 
-1. Create `modules/my-module.nix`
+1. Create `modules/new-module.nix`
 2. Add:
 
    ```nix
-   imports = [ ../modules/my-module.nix ];
+   imports = [ ../modules/new-module.nix ];
    ```
 
    inside `hosts/desktop.nix`
