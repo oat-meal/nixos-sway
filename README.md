@@ -1,19 +1,19 @@
-# NixOS Advanced Gaming Desktop Configuration
+# NixOS Gaming Desktop Configuration
 
-### **Enterprise-Level NixOS: Ryzen 9950X + RX 9070 XT + 64GB RAM**
+### **NixOS Configuration: Ryzen 9950X + RX 9070 XT + 64GB RAM**
 
-This repository provides a comprehensive, modular NixOS configuration for high-performance Wayland gaming and productivity, featuring **SwayFX compositor** with **Niri-inspired aesthetics**, **Noctalia shell**, and **enterprise-level gaming optimizations**.
+This repository provides a modular NixOS configuration for Wayland gaming and productivity, featuring **SwayFX compositor**, **Noctalia shell**, and gaming-specific optimizations.
 
-**Hardware Target**: Ryzen 9950X (16-core) + RX 9070 XT RDNA 4 + 64GB RAM
+**Hardware Specifications**: Ryzen 9950X (16-core) + RX 9070 XT RDNA 4 + 64GB RAM
 
 **Key Features:**
-* 🎨 **Niri-inspired workflow** with SwayFX blur, rounded corners, shadows, and modern UI depth
-* 🖥️ **Noctalia shell** replacing traditional panels with advanced IPC-based desktop interface
-* 🔒 **Integrated security** with auto-lock, PAM authentication, and multiple trigger methods
-* 🎮 **Gaming excellence** with Steam Wayland browser integration, RADV optimizations, and GameMode
-* 🏠 **Home Manager** for comprehensive user environment and configuration management
-* 📦 **Modular architecture** separating system, user, stable, and unstable package concerns
-* ⚡ **Performance tuning** for 16-core CPU topology, 64GB memory optimization, and RDNA 4 features
+* 🎨 **SwayFX visual effects** with blur, rounded corners, and shadows
+* 🖥️ **Noctalia shell** replacing traditional panels with IPC-based interface
+* 🔒 **Auto-lock functionality** with PAM authentication and multiple triggers
+* 🎮 **Steam integration** with Wayland browser support, RADV features, and GameMode
+* 🏠 **Home Manager** for user environment and configuration management
+* 📦 **Modular design** separating system, user, stable, and unstable packages
+* ⚡ **Hardware-specific tuning** for 16-core CPU topology and 64GB memory
 
 ---
 
@@ -185,13 +185,13 @@ reboot
 * **Graphics**: Vulkan + 32-bit support  
 * **Tools**: Gamescope, MangoHud for performance monitoring
 
-## 🎮 Advanced Gaming Optimizations
+## 🎮 Gaming Configuration
 
-### **Enterprise-Level Steam Configuration**
+### **Steam Configuration**
 
-This configuration provides comprehensive gaming optimizations specifically tuned for **Ryzen 9950X + RX 9070 XT RDNA 4 + 64GB RAM** systems, with advanced Wayland compatibility and performance tuning.
+This configuration includes gaming optimizations for **Ryzen 9950X + RX 9070 XT RDNA 4 + 64GB RAM** systems, with Wayland compatibility and hardware-specific tuning.
 
-#### **Critical Integration Challenges Solved**
+#### **Integration Issues Resolved**
 
 **1. Steam Browser Overlay Issues**:
 - **Problem**: Browser menus in games (Pax Dei) cause black screens in Wayland + gamescope environments
@@ -209,9 +209,9 @@ This configuration provides comprehensive gaming optimizations specifically tune
 - **Solution**: User-level desktop entry override system with proper environment variables
 - **Files**: `/etc/nixos/modules/steam.nix:42-86`
 
-#### **Hardware-Specific Performance Tuning**
+#### **Hardware-Specific Configuration**
 
-**CPU Optimization (Ryzen 9950X - 16 Cores)**:
+**CPU Configuration (Ryzen 9950X - 16 Cores)**:
 ```nix
 # Wine topology matching 16-core hardware
 WINE_CPU_TOPOLOGY = "16:2";
@@ -225,7 +225,7 @@ programs.gamemode.settings = {
 };
 ```
 
-**GPU Advanced Features (RX 9070 XT RDNA 4)**:
+**GPU Configuration (RX 9070 XT RDNA 4)**:
 ```nix
 # RADV cutting-edge features for RDNA 4
 RADV_PERFTEST = "aco,sam,nggc,RT"; # ACO compiler + Smart Access Memory + Next-Gen Geometry + Ray Tracing
@@ -237,7 +237,7 @@ DXVK_ASYNC = "1"; DXVK_STATE_CACHE = "1";
 __GL_THREADED_OPTIMIZATIONS = "1"; mesa_glthread = "true";
 ```
 
-**Memory & Storage Optimization (64GB + Btrfs)**:
+**Memory & Storage Configuration (64GB + Btrfs)**:
 ```nix
 # High-memory system VM tuning
 boot.kernel.sysctl = {
@@ -254,7 +254,7 @@ fileSystems."/storage" = {
 boot.kernelParams = [ "transparent_hugepage=always" ];
 ```
 
-#### **Game-Specific Launch Configurations**
+#### **Game Launch Configurations**
 
 **Large Open Worlds** (Pax Dei, Cyberpunk 2077):
 ```bash
@@ -274,11 +274,11 @@ gamemoderun mangohud env RADV_PERFTEST=aco,sam,nggc,RT %command%
 gamemoderun env RADV_DEBUG=nocompute %command%
 ```
 
-#### **Anti-Aliasing Recommendations**
+#### **Anti-Aliasing Options**
 
-- **TSR (Temporal Super Resolution)**: Preferred for most games, excellent quality with RDNA 4
-- **SMAA**: Alternative for sharper textures, lower VRAM usage
-- **MSAA 4x**: High-quality classic AA when VRAM allows (24GB headroom available)
+- **TSR (Temporal Super Resolution)**: Available in supported games
+- **SMAA**: Lower VRAM usage option
+- **MSAA 4x**: Traditional anti-aliasing option
 
 #### **USB Hardware Support**
 
@@ -293,13 +293,13 @@ services.udev.extraRules = ''
 users.users.chris.extraGroups = [ "wheel" "audio" "video" "plugdev" "input" ];
 ```
 
-#### **Performance Metrics Achieved**
+#### **Configuration Results**
 
-- **CPU Utilization**: 15-20% improvement through topology optimization and GameMode core binding
-- **GPU Performance**: 10-15% gain from RADV features and async shader compilation  
-- **Memory Efficiency**: Reduced stuttering through 64GB-optimized VM parameters
-- **Storage I/O**: 25% faster game loading with Btrfs compression and SSD optimization
-- **Browser Compatibility**: 100% Wayland functionality including Steam overlay integration
+- **CPU**: Topology optimization and GameMode core binding implemented
+- **GPU**: RADV features and async shader compilation enabled
+- **Memory**: VM parameters tuned for 64GB systems
+- **Storage**: Btrfs compression and SSD optimization configured
+- **Browser**: Wayland Steam overlay functionality working
 
 ### Key Bindings
 
@@ -528,33 +528,33 @@ Super+Delete    # Lock screen immediately
 
 ---
 
-# 🆕 Latest Configuration Updates
+# 🆕 Recent Configuration Updates
 
-### **Gaming & Compatibility Achievements**
-* ✅ **Steam Browser Integration**: Complete Wayland browser overlay functionality resolved
-* ✅ **wofi Launch Stability**: Fixed Steam desktop entry conflicts via user-level overrides
-* ✅ **RDNA 4 Optimizations**: Full RADV feature utilization (ACO, SAM, Next-Gen Geometry, RT)
-* ✅ **USB Hardware Support**: ASUS ROG device integration with proper udev rules
+### **Gaming & Compatibility**
+* ✅ **Steam Browser Integration**: Wayland browser overlay functionality working
+* ✅ **wofi Launch Stability**: Steam desktop entry conflicts resolved
+* ✅ **RDNA 4 Configuration**: RADV features enabled (ACO, SAM, Next-Gen Geometry, RT)
+* ✅ **USB Hardware Support**: ASUS ROG device udev rules implemented
 
-### **Visual & Workflow Enhancements**
-* ✅ **Niri-Inspired Aesthetics**: Complete SwayFX configuration with blur, shadows, rounded corners
-* ✅ **Lock Screen Integration**: Auto-lock, PAM authentication, multiple trigger methods
-* ✅ **Modern Shell Experience**: Noctalia replacing traditional panels with IPC-based interface
-* ✅ **Media Control Integration**: Seamless playback control via Noctalia IPC commands
+### **Visual & Interface**
+* ✅ **SwayFX Effects**: Configuration with blur, shadows, rounded corners
+* ✅ **Lock Screen**: Auto-lock, PAM authentication, multiple triggers
+* ✅ **Noctalia Shell**: Traditional panel replacement with IPC interface
+* ✅ **Media Controls**: Playback control via Noctalia IPC
 
-### **Performance & Security**
-* ✅ **16-Core CPU Topology**: Wine and GameMode optimization for Ryzen 9950X
-* ✅ **64GB Memory Tuning**: VM parameter optimization for high-memory gaming systems
-* ✅ **GitHub Documentation**: Complete technical documentation in both Obsidian and Git
+### **System Configuration**
+* ✅ **16-Core CPU**: Wine and GameMode configuration for Ryzen 9950X
+* ✅ **64GB Memory**: VM parameters tuned for high-memory systems
+* ✅ **Documentation**: Technical documentation updated in Obsidian and Git
 
 ---
 
-# 🎉 Design Philosophy
+# 🎉 Configuration Approach
 
-This configuration prioritizes:
+This configuration includes:
 
-* **Modern Workflow**: Niri-inspired horizontal layout with smooth navigation
-* **Performance**: Optimized for gaming, development, and daily productivity
-* **Maintainability**: Modular design for easy updates and customization
-* **Aesthetic**: Cohesive Catppuccin theming with subtle animations
-* **Future-proof**: Built on stable NixOS 25.05 with selective unstable packages
+* **Modular Design**: Separated concerns for system, user, and package management
+* **Hardware Tuning**: Configurations specific to Ryzen 9950X + RX 9070 XT + 64GB RAM
+* **Wayland Focus**: Native Wayland applications and compatibility
+* **Visual Effects**: SwayFX compositor with blur, shadows, and rounded corners
+* **Stable Base**: NixOS 25.05 stable with selective unstable packages
