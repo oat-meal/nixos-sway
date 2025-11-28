@@ -67,16 +67,26 @@ timedatectl set-ntp true
 
 ## 2. Partitioning & Disk Setup
 
-### **View your disks**
+**IMPORTANT**: This guide assumes you have already partitioned your disks. If you need partitioning instructions, see the [NixOS Installation Guide](https://nixos.org/manual/nixos/stable/index.html#sec-installation-partitioning).
+
+### **View your disks and partitions**
 
 ```sh
+# View all block devices and filesystems
 lsblk -f
+
+# Alternative detailed view
+fdisk -l
 ```
 
-### **Check UUIDs (VERY IMPORTANT):**
+### **Check UUIDs (CRITICAL STEP):**
 
 ```sh
+# Get UUIDs for all partitions
 blkid
+
+# Save UUIDs to a file for reference during configuration editing
+blkid > /tmp/uuids.txt
 ```
 
 Ensure every UUID in:
@@ -103,19 +113,37 @@ The following paths must be correct:
 
 ---
 
-## 3. Mount Filesystems (example)
+## 3. Mount Filesystems
+
+**IMPORTANT**: Replace ALL placeholder UUIDs below with actual UUIDs from `blkid` output.
 
 ```sh
-mount -o subvol=@ /dev/<UUID> /mnt
+# Mount root subvolume (replace YOUR-MAIN-BTRFS-UUID with actual UUID)
+mount -o subvol=@ /dev/disk/by-uuid/YOUR-MAIN-BTRFS-UUID /mnt
+
+# Create mount directories
 mkdir -p /mnt/{boot,home,nix,var/log,swap,storage}
 
-mount -o subvol=@home /dev/<same-UUID> /mnt/home
-mount -o subvol=@nix /dev/<same-UUID> /mnt/nix
-mount -o subvol=@log /dev/<same-UUID> /mnt/var/log
-mount -o subvol=@swap /dev/<same-UUID> /mnt/swap
+# Mount Btrfs subvolumes (ALL use the same main Btrfs UUID)
+mount -o subvol=@home /dev/disk/by-uuid/YOUR-MAIN-BTRFS-UUID /mnt/home
+mount -o subvol=@nix /dev/disk/by-uuid/YOUR-MAIN-BTRFS-UUID /mnt/nix
+mount -o subvol=@log /dev/disk/by-uuid/YOUR-MAIN-BTRFS-UUID /mnt/var/log
+mount -o subvol=@swap /dev/disk/by-uuid/YOUR-MAIN-BTRFS-UUID /mnt/swap
 
-mount /dev/<UUID-of-boot> /mnt/boot
-mount -t btrfs -o compress=zstd /dev/<UUID-storage> /mnt/storage
+# Mount boot partition (replace YOUR-BOOT-UUID with actual boot partition UUID)
+mount /dev/disk/by-uuid/YOUR-BOOT-UUID /mnt/boot
+
+# Mount storage pool (replace YOUR-STORAGE-UUID with actual storage UUID)
+mount -t btrfs -o compress=zstd /dev/disk/by-uuid/YOUR-STORAGE-UUID /mnt/storage
+```
+
+**Example with actual UUIDs** (DO NOT copy these - use your own from `blkid`):
+```sh
+# Example only - these UUIDs will not match your system
+mount -o subvol=@ /dev/disk/by-uuid/547e9d27-e12b-48a7-a60c-291ef37587ec /mnt
+mount -o subvol=@home /dev/disk/by-uuid/547e9d27-e12b-48a7-a60c-291ef37587ec /mnt/home
+mount /dev/disk/by-uuid/4BE5-47A3 /mnt/boot
+mount -t btrfs -o compress=zstd /dev/disk/by-uuid/5462bbac-d14a-4189-8ca8-aa07cd026c86 /mnt/storage
 ```
 
 ---
@@ -125,26 +153,53 @@ mount -t btrfs -o compress=zstd /dev/<UUID-storage> /mnt/storage
 Once disks are mounted:
 
 ```sh
-git clone <your-repo> /mnt/etc/nixos
+# Replace with your actual repository URL
+git clone https://github.com/your-username/nixos-sway.git /mnt/etc/nixos
 ```
 
-Or manually copy via USB.
+**Alternative methods:**
+- Download ZIP from GitHub and extract to `/mnt/etc/nixos`
+- Copy via USB drive
+- Use `curl` or `wget` to download individual files
+
+**IMPORTANT**: Ensure `/mnt/etc/nixos` contains the `flake.nix` file before proceeding.
 
 ---
 
 ## 5. Install NixOS with Flakes
 
+**Before installation**, verify the flake configuration is valid:
+
+```sh
+# Test the flake from the installer environment
+nix flake check /mnt/etc/nixos
+```
+
+**Install NixOS:**
+
 ```sh
 nixos-install --flake /mnt/etc/nixos#desktop-nixos
 ```
 
-Set root password when prompted.
+**IMPORTANT**: 
+- Set a **strong** root password when prompted
+- Installation may take 30-60 minutes depending on internet speed
+- Do not interrupt the process
 
-Reboot:
+**After installation completes:**
 
 ```sh
+# Unmount filesystems cleanly
+umount -R /mnt
+
+# Reboot into the new system
 reboot
 ```
+
+**Post-reboot verification:**
+- Verify you can log in as user `chris` (password set during installation)
+- Verify Sway starts automatically via greetd
+- Test basic functionality before proceeding
 
 ---
 
@@ -558,3 +613,51 @@ This configuration includes:
 * **Wayland Focus**: Native Wayland applications and compatibility
 * **Visual Effects**: SwayFX compositor with blur, shadows, and rounded corners
 * **Stable Base**: NixOS 25.05 stable with selective unstable packages
+
+---
+
+# 🤖 Claude Administrative Assistant Integration
+
+## **System Administration Assistant**
+
+This configuration is designed to work with **Claude Code** as a system administration assistant, providing automated support for:
+
+### **Primary Administrative Functions**
+- **Configuration Management**: NixOS module updates, package management, system tuning
+- **Documentation Maintenance**: Synchronizing changes across Obsidian vault, GitHub README, and system files
+- **Validation & Testing**: Pre-deployment testing using `nixos-rebuild dry-build` and configuration validation
+- **Git Repository Management**: Commit tracking, change documentation, and repository maintenance
+
+### **Administrative Workflows**
+
+**Adding New Packages:**
+1. Determine appropriate module (`system-packages.nix` vs `user-packages.nix`)
+2. Edit configuration file with new package
+3. Validate with `nixos-rebuild dry-build --flake /etc/nixos#desktop-nixos`
+4. Apply with `nixos-rebuild switch --flake /etc/nixos#desktop-nixos`
+5. Document changes and commit to Git
+
+**System Updates:**
+1. Update flake inputs: `sudo nix flake update /etc/nixos`
+2. Preview changes: `sudo nixos-rebuild dry-activate --flake /etc/nixos#desktop-nixos`
+3. Apply updates: `sudo nixos-rebuild switch --flake /etc/nixos#desktop-nixos`
+4. Update documentation if significant changes made
+
+**Configuration Validation:**
+```bash
+# Multiple validation methods available
+sway --validate                    # Validate Sway configuration
+home-manager build                 # Validate Home Manager
+nix flake check /etc/nixos        # Check flake syntax
+```
+
+### **Documentation Sources**
+- **CLAUDE.md**: System context and administrative guidelines (`/home/chris/.claude/CLAUDE.md`)
+- **Obsidian Vault**: Detailed technical documentation (`/home/chris/obsidian-vault/Systems/`)
+- **GitHub README**: Installation procedures and public documentation (`/etc/nixos/README.md`)
+
+### **Safety Practices**
+- Always test configuration changes in dry-run mode before applying
+- Maintain Git commit history for all configuration modifications
+- Document significant system changes across all documentation sources
+- Validate configurations using appropriate tools before deployment
