@@ -70,6 +70,11 @@
     libdrm
     libxkbcommon
     (pkgs.pkgsi686Linux.vulkan-loader)  # 32-bit Vulkan for Proton
+    
+    ######## Wine for Windows applications ########
+    wine
+    winetricks
+    protontricks
 
     ######## Multimedia / misc libs ########
     ffmpeg
