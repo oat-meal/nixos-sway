@@ -57,6 +57,12 @@
     # WiFi suspend/resume fix - prevent WiFi from deep sleep
     "iwlwifi.power_save=0"
     "ath11k_pci.power_save=0"
+    # Additional WiFi stability parameters
+    "iwlwifi.power_scheme=1"  # Force active power scheme
+    "iwlwifi.bt_coex_active=0"  # Disable Bluetooth coexistence
+    # Prevent system from entering deep sleep that affects PCIe devices
+    "intel_idle.max_cstate=1"  # Limit CPU C-states for PCIe stability
+    "acpi_osi=\"!Windows 2012\""  # Force better ACPI compatibility
     # Removed problematic parameters that interfere with WiFi detection:
     # - mitigations=off (security risk)
     # - intel_pstate=disable (wrong for AMD)
@@ -180,9 +186,28 @@
     # USB HID devices for user access (gaming peripherals)
     KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0664", GROUP="input"
     
+    # Xbox Wireless Controller support (Bluetooth and USB)
+    KERNEL=="hidraw*", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="02fd", MODE="0664", GROUP="input", TAG+="uaccess"
+    KERNEL=="hidraw*", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0b12", MODE="0664", GROUP="input", TAG+="uaccess"
+    KERNEL=="hidraw*", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0b13", MODE="0664", GROUP="input", TAG+="uaccess"
+    KERNEL=="hidraw*", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0b20", MODE="0664", GROUP="input", TAG+="uaccess"
+    KERNEL=="hidraw*", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0b21", MODE="0664", GROUP="input", TAG+="uaccess"
+    KERNEL=="hidraw*", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0b22", MODE="0664", GROUP="input", TAG+="uaccess"
+    
     # USB audio devices (headsets, DACs, AIO pump controls)
     SUBSYSTEM=="usb", ATTRS{bInterfaceClass}=="01", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTRS{bInterfaceClass}=="03", TAG+="uaccess"
+    
+    # WiFi power management fixes - prevent WiFi adapters from entering sleep states
+    # Disable power management for all network devices
+    SUBSYSTEM=="net", ACTION=="add", KERNEL=="wl*", RUN+="/bin/sh -c 'echo on > /sys/class/net/%k/device/power/control'"
+    
+    # Disable USB power management for network adapters
+    SUBSYSTEM=="usb", ATTRS{bInterfaceClass}=="02", ATTR{power/control}="on"
+    SUBSYSTEM=="usb", ATTRS{bInterfaceClass}=="09", ATTR{power/control}="on"
+    
+    # Specific WiFi adapter power management (covers most chipsets)
+    SUBSYSTEM=="pci", ATTRS{class}=="0x028000", ATTR{power/control}="on"
   '';
 
   ################################
