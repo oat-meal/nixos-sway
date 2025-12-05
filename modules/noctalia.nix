@@ -1,16 +1,6 @@
 { pkgs, inputs, ... }:
 
 {
-  # Override QuickShell to use stable Qt6 to fix crashes
-  nixpkgs.overlays = [
-    (final: prev: {
-      quickshell = prev.unstable.quickshell.override {
-        # Use Qt6 from stable nixpkgs (6.9.3) instead of unstable (6.10.0)
-        qt6 = prev.qt6;
-      };
-    })
-  ];
-
   # Install Noctalia shell and QuickShell
   environment.systemPackages = [
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
