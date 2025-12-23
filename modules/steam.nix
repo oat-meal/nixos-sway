@@ -26,7 +26,7 @@
         apply_gpu_optimisations = "accept-responsibility";
         gpu_device = 0;
         amd_performance_level = "high";
-        # Use discrete AMD GPU (RX 9070)
+        # Use discrete AMD GPU
         gpu_power_limit = "auto";
       };
       cpu = {
@@ -107,9 +107,10 @@
     MESA_GL_VERSION_OVERRIDE = "4.6";
     MESA_GLSL_VERSION_OVERRIDE = "460";
     
-    # Wayland-specific Steam optimizations  
+    # COSMIC Desktop Environment optimizations
     ENABLE_WAYLAND_IME = "1";
-    XDG_CURRENT_DESKTOP = "sway";
+    XDG_CURRENT_DESKTOP = "COSMIC";
+    XDG_SESSION_DESKTOP = "cosmic";
     
     # Vulkan optimizations - AMD primary, Intel fallback
     VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json:/run/opengl-driver/share/vulkan/icd.d/intel_icd.x86_64.json";
@@ -119,7 +120,7 @@
     
     # Wine/Proton optimizations
     WINEDLLOVERRIDES = "winemenubuilder.exe=d";
-    WINE_CPU_TOPOLOGY = "16:2"; # Updated for Ryzen 9950X (16 cores)
+    WINE_CPU_TOPOLOGY = "16:2"; # CPU topology for multi-core systems
     WINE_LARGE_ADDRESS_AWARE = "1";
     
     # DXVK optimizations
@@ -138,7 +139,7 @@
     RADV_DEBUG = "nocompute"; # Disable compute queue for some games
     mesa_glthread = "true";
     
-    # Memory optimizations for large games like Pax Dei/Elite Dangerous  
+    # Memory optimizations for large games  
     MALLOC_ARENA_MAX = "4";
     WINE_RT_POLICY = "1";
     
@@ -157,14 +158,14 @@
     "net.core.wmem_default" = 31457280;
     "net.core.wmem_max" = 134217728;
     "net.core.netdev_max_backlog" = 5000;
-    # Memory optimizations for 64GB system
+    # Memory optimizations for high-memory systems
     "vm.dirty_writeback_centisecs" = 6000;
     "vm.dirty_expire_centisecs" = 6000;
-    "vm.swappiness" = 1; # Reduced for high-memory system
+    "vm.swappiness" = 1; # Reduced for systems with abundant RAM
     "vm.vfs_cache_pressure" = 50; # Keep more filesystem cache
     "vm.dirty_ratio" = 15; # Allow more dirty memory before sync
     "vm.dirty_background_ratio" = 5;
-    # Large game asset streaming optimizations
+    # Game asset streaming optimizations
     "vm.min_free_kbytes" = 1048576; # 1GB minimum free memory
   };
   
@@ -292,7 +293,7 @@
     text = ''
       [Desktop Entry]
       Name=Steam (Gaming Mode)
-      Comment=Launch Steam in Big Picture with GameScope + GameMode optimizations
+      Comment=Launch Steam in Big Picture with GameScope and GameMode optimizations
       Exec=gamemoderun gamescope -W 3840 -H 2160 -r 120 --adaptive-sync --expose-wayland -- steam -gamepadui
       Icon=steam
       Terminal=false
