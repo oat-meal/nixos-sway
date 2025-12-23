@@ -1,5 +1,5 @@
 {
-  description = "Personal NixOS desktop configuration with SwayFX, Home Manager, Noctalia shell, and modular structure";
+  description = "Personal NixOS desktop configuration with COSMIC Desktop, Home Manager, and modular structure";
 
   ################################
   ## FLAKE INPUTS
@@ -18,17 +18,12 @@
     };
 
 
-    # Noctalia shell
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
   };
 
   ################################
   ## FLAKE OUTPUTS
   ################################
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, noctalia, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }:
     let
       system = "x86_64-linux";
 
@@ -40,7 +35,7 @@
           specialArgs = {
             inherit system;
             inputs = {
-              inherit self nixpkgs nixpkgs-unstable home-manager noctalia;
+              inherit self nixpkgs nixpkgs-unstable home-manager;
             };
           };
 
@@ -59,7 +54,6 @@
         ./modules/system-packages.nix
         ./modules/unstable-packages.nix
         ./modules/steam.nix
-        ./modules/noctalia.nix
        # ./modules/usb-audio-fixes.nix
         
         # Experimental packages (absolute path for git-ignored files)
@@ -106,7 +100,7 @@
           home-manager.extraSpecialArgs = { 
             inherit system; 
             inputs = {
-              inherit self nixpkgs nixpkgs-unstable home-manager noctalia;
+              inherit self nixpkgs nixpkgs-unstable home-manager;
             };
           };
           home-manager.backupFileExtension = "hm_bak";

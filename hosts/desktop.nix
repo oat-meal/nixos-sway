@@ -8,8 +8,6 @@
     ../modules/system-packages.nix
     ../modules/unstable-packages.nix
     ../modules/steam.nix
-    ../modules/sway.nix
-    ../modules/noctalia.nix
   ] ++ lib.optional (builtins.pathExists ../modules/experimental-packages.nix) ../modules/experimental-packages.nix;
 
   ################################
@@ -154,18 +152,13 @@
   };
 
   ################################
-  ## Display manager: greetd + noctalia
+  ## COSMIC Desktop Environment
   ################################
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        # Launch user's Home Manager Sway session
-        command = "sway";
-        user = "chris";
-      };
-    };
-  };
+  services.desktopManager.cosmic.enable = true;
+  services.displayManager.cosmic-greeter.enable = true;
+  
+  # Optional: System76 scheduler for better performance
+  services.system76-scheduler.enable = true;
 
   ################################
   ## Networking & host identity
