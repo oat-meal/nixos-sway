@@ -1,19 +1,16 @@
-# NixOS Gaming Desktop Configuration
+# NixOS COSMIC Desktop Configuration
 
-### **NixOS Configuration: Ryzen 9950X + RX 9070 XT + 64GB RAM**
+### **NixOS Configuration with COSMIC Desktop Environment**
 
-This repository provides a modular NixOS configuration for Wayland gaming and productivity, featuring **SwayFX compositor**, **Noctalia shell**, and gaming-specific optimizations.
-
-**Hardware Specifications**: Ryzen 9950X (16-core) + RX 9070 XT RDNA 4 + 64GB RAM
+This repository provides a modular NixOS configuration for COSMIC desktop and gaming, featuring **COSMIC Desktop Environment**, **comprehensive gaming support**, and hardware-optimized configurations.
 
 **Key Features:**
-* 🎨 **SwayFX visual effects** with blur, rounded corners, and shadows
-* 🖥️ **Noctalia shell** replacing traditional panels with IPC-based interface
-* 🔒 **Auto-lock functionality** with PAM authentication and multiple triggers
-* 🎮 **Steam integration** with Wayland browser support, RADV features, and GameMode
+* 🌌 **COSMIC Desktop Environment** with System76 scheduler for performance
+* 🎮 **Gaming optimization** with Steam Wayland wrapper, GameMode, and graphics acceleration
 * 🏠 **Home Manager** for user environment and configuration management
 * 📦 **Modular design** separating system, user, stable, and unstable packages
-* ⚡ **Hardware-specific tuning** for 16-core CPU topology and 64GB memory
+* ⚡ **Hardware support** with AMD optimizations, WiFi management, and gaming peripherals
+* 🔧 **Administrative integration** with Claude Code system management
 
 ---
 
@@ -21,20 +18,17 @@ This repository provides a modular NixOS configuration for Wayland gaming and pr
 
 ```
 /etc/nixos
-├── flake.nix                   # Main flake (nixpkgs stable/unstable, HM, Noctalia)
+├── flake.nix                   # Main flake (nixpkgs stable/unstable, Home Manager)
 ├── hosts/
-│   └── desktop.nix             # Host config (hardware, filesystems, greetd, users)
+│   └── desktop.nix             # Host config (hardware, COSMIC desktop, users)
 ├── home/
 │   ├── desktop-user.nix        # Home Manager user configuration
-│   ├── theme.nix               # Catppuccin theming (GTK, cursors, notifications)
-│   └── sway-config.nix         # Comprehensive Sway config with Niri workflow
+│   └── theme.nix               # Catppuccin theming (GTK, cursors)
 └── modules/
-    ├── system-packages.nix     # Core system packages (stable channel)
+    ├── system-packages.nix     # Core system packages and Wayland tools
     ├── user-packages.nix       # User packages via Home Manager
     ├── unstable-packages.nix   # Unstable overlay for cutting-edge packages
-    ├── sway.nix                # SwayFX compositor system configuration
-    ├── steam.nix               # Gaming environment (Steam, Proton, Vulkan)
-    └── noctalia.nix            # Noctalia shell with lock screen integration
+    └── steam.nix               # Gaming environment (Steam wrapper, GameMode, graphics)
 ```
 
 ---
@@ -44,7 +38,7 @@ This repository provides a modular NixOS configuration for Wayland gaming and pr
 These steps assume:
 
 * Installing NixOS 25.05
-* 2 NVMe drives (as per this system), but the instructions work on any layout
+* Btrfs filesystem with subvolumes (adaptable to other layouts)
 * This repo will be cloned or copied into `/etc/nixos` after partitioning
 
 ---
@@ -154,7 +148,7 @@ Once disks are mounted:
 
 ```sh
 # Replace with the actual repository URL
-git clone https://github.com/username/nixos-sway.git /mnt/etc/nixos
+git clone https://github.com/oat-meal/nixos-cosmic.git /mnt/etc/nixos
 ```
 
 **Alternative methods:**
@@ -198,172 +192,144 @@ reboot
 
 **Post-reboot verification:**
 - Verify login as user `chris` works (password set during installation)
-- Verify Sway starts automatically via greetd
+- Verify COSMIC Desktop Environment starts via COSMIC Greeter
 - Test basic functionality before proceeding
 
 ---
 
 # 🖥️ System Overview
 
-### Display Environment
+### Desktop Environment
 
-* **Compositor**: SwayFX with blur, rounded corners, and shadows
-* **Shell**: Noctalia (modern Qt-based shell replacing traditional bars)
-* **Login**: greetd with automatic Sway session launch
-* **Lock Screen**: Noctalia IPC-based with auto-lock and multiple triggers
-* **Notifications**: Mako with Catppuccin theming
+* **Desktop Environment**: COSMIC Desktop Environment with System76 scheduler
+* **Display Manager**: COSMIC Greeter
+* **Compositor**: Built-in COSMIC compositor
+* **Window Management**: COSMIC's built-in tiling window manager
+* **Workspaces**: Dynamic workspace management
 
-### Window Management
+### Development & User Interface
 
-* **Layout**: Niri-inspired horizontal column workflow
-* **Navigation**: Vi-keys and arrow keys for focus/movement
-* **Workspaces**: Traditional numbered workspaces (1-10)
-* **Gaps**: Smart gaps (8px inner, 4px outer)
-* **Borders**: Minimal borders with theme-matched colors
-
-### User Interface
-
-* **Launcher**: wofi with image support
-* **Notifications**: Mako with rounded corners and theming
-* **Terminal**: Alacritty with JetBrainsMono Nerd Font
+* **Terminal**: Alacritty with JetBrainsMono Nerd Font (14pt)
 * **Shell**: Zsh with Oh-My-Zsh (agnoster theme)
+* **Editor**: Neovim (system and user level)
+* **Tools**: git, wget, curl, ripgrep, htop, claude-code
+* **Fallback Tools**: wofi, waybar, mako available for compatibility
 
 ### Audio & Hardware
 
 * **Audio**: PipeWire with ALSA, Pulse, and JACK support
-* **Input**: Optimized keyboard/touchpad/mouse settings
+* **Graphics**: Hardware acceleration with 32-bit support for gaming
 * **Bluetooth**: Enabled with Blueman integration
+* **WiFi**: NetworkManager with power management disabled
+* **Gaming Peripherals**: USB HID devices and Xbox controller support
 
-### Gaming
+### Gaming Configuration
 
-* **Steam**: Full Steam integration with Proton support
-* **Graphics**: Vulkan + 32-bit support  
-* **Tools**: Gamescope, MangoHud for performance monitoring
+* **Steam**: Custom Wayland wrapper with browser overlay fixes
+* **GameMode**: CPU/GPU optimizations with performance governor
+* **Graphics**: AMD RADV optimizations, 32-bit Vulkan support
+* **Tools**: MangoHUD, GameScope, Lutris, Heroic, Bottles, CoreCtrl
 
 ## 🎮 Gaming Configuration
 
 ### **Steam Configuration**
 
-This configuration includes gaming optimizations for **Ryzen 9950X + RX 9070 XT RDNA 4 + 64GB RAM** systems, with Wayland compatibility and hardware-specific tuning.
+This configuration includes gaming optimizations with COSMIC Desktop Environment, featuring Wayland compatibility and comprehensive graphics support.
 
-#### **Integration Issues Resolved**
+#### **Key Features Implemented**
 
-**1. Steam Browser Overlay Issues**:
-- **Problem**: Browser menus in games (Pax Dei) cause black screens in Wayland + gamescope environments
-- **Root Cause**: Steam's CEF browser conflicts with Wayland compositor integration
-- **Solution**: Complete browser compatibility stack with Ozone platform forcing
-- **Implementation**: 
-  ```nix
-  STEAM_ENABLE_WAYLAND_BROWSER = "1";
-  CHROMIUM_FLAGS = "--enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform=wayland --disable-gpu-sandbox";
-  ```
+**1. Steam Wayland Integration**:
+- **Implementation**: Custom Steam wrapper with Wayland environment variables
+- **Browser Overlay**: STEAM_ENABLE_WAYLAND_BROWSER=1 with Chromium Ozone platform
+- **Desktop Integration**: Custom desktop entries for standard and gaming mode launches
+- **Environment**: Comprehensive gaming environment variables for DXVK, VKD3D, RADV
 
-**2. wofi Launcher Desktop Entry Conflicts**:
-- **Problem**: Steam fails to launch properly via wofi while working from terminal
-- **Root Cause**: System vs. custom Steam desktop entry priority conflicts
-- **Solution**: User-level desktop entry override system with proper environment variables
-- **Files**: `/etc/nixos/modules/steam.nix:42-86`
+**2. GameMode Performance Optimization**:
+- **CPU Configuration**: 8-core binding with performance governor
+- **GPU Optimizations**: AMD-specific optimizations with power management
+- **Notifications**: GameMode start/end notifications via libnotify
+- **Integration**: Automatic performance optimization during gaming sessions
 
-#### **Hardware-Specific Configuration**
+#### **Hardware Configuration**
 
-**CPU Configuration (Ryzen 9950X - 16 Cores)**:
+**CPU Configuration (AMD with Gaming Optimizations)**:
 ```nix
-# Wine topology matching 16-core hardware
-WINE_CPU_TOPOLOGY = "16:2";
-# Low-latency kernel preemption for gaming
-boot.kernelParams = [ "preempt=full" "hugepagesz=2M" "pci=pcie_bus_perf" ];
-# Performance governor for consistent high clocks
+# Performance governor for gaming
 powerManagement.cpuFreqGovernor = "performance";
-# GameMode: 8 dedicated cores with core parking disabled
+# Low-latency kernel preemption
+boot.kernelParams = [ "amd_pstate=active" "preempt=full" "hugepagesz=2M" ];
+# GameMode: 8 dedicated cores with optimizations
 programs.gamemode.settings = {
   cpu = { park_cores = "no"; pin_cores = "yes"; core_count = "8"; };
 };
 ```
 
-**GPU Configuration (RX 9070 XT RDNA 4)**:
+**Graphics Configuration (AMD RADV)**:
 ```nix
-# RADV cutting-edge features for RDNA 4
-RADV_PERFTEST = "aco,sam,nggc,RT"; # ACO compiler + Smart Access Memory + Next-Gen Geometry + Ray Tracing
-# DirectX 12 → Vulkan with DXR ray tracing
-VKD3D_CONFIG = "dxr11,dxr"; VKD3D_SHADER_MODEL = "6_6";
-# Advanced DXVK optimizations
+# AMD RADV optimizations
+RADV_PERFTEST = "aco,sam,nggc,RT";
+# DXVK optimizations
 DXVK_ASYNC = "1"; DXVK_STATE_CACHE = "1";
-# Threading optimizations
+# Graphics threading
 __GL_THREADED_OPTIMIZATIONS = "1"; mesa_glthread = "true";
+# VKD3D-Proton for DirectX 12
+VKD3D_CONFIG = "dxr11,dxr"; VKD3D_SHADER_MODEL = "6_6";
 ```
 
-**Memory & Storage Configuration (64GB + Btrfs)**:
+**Memory & Storage Configuration (Btrfs)**:
 ```nix
-# High-memory system VM tuning
+# VM tuning for gaming
 boot.kernel.sysctl = {
-  "vm.swappiness" = 1;                    # Minimize swapping with abundant RAM
-  "vm.vfs_cache_pressure" = 50;           # Balanced cache retention
-  "vm.dirty_ratio" = 15;                  # Large dirty buffer for 64GB
-  "vm.min_free_kbytes" = 1048576;         # 1GB minimum free for streaming
+  "vm.swappiness" = 1;
+  "vm.vfs_cache_pressure" = 50;
+  "vm.dirty_ratio" = 15;
+  "vm.min_free_kbytes" = 1048576;
 };
-# Btrfs with compression for game storage
+# Btrfs storage with compression
 fileSystems."/storage" = {
   options = [ "rw" "ssd" "relatime" "space_cache=v2" "compress=zstd" ];
 };
-# Transparent huge pages for large game assets
-boot.kernelParams = [ "transparent_hugepage=always" ];
 ```
 
-#### **Game Launch Configurations**
+#### **Gaming Tools Available**
 
-**Large Open Worlds** (Pax Dei, Cyberpunk 2077):
+**Performance Monitoring**:
+- MangoHUD for in-game performance overlay
+- GameScope for game session management
+- CoreCtrl for AMD GPU control and monitoring
+
+**Compatibility Layers**:
+- Bottles for Windows application management
+- Lutris for game management and compatibility
+- Heroic Games Launcher for Epic Games and GOG
+
+**Example GameMode Launch**:
 ```bash
-gamemoderun gamescope -W 3840 -H 2160 -w 2560 -h 1440 \
-  --force-grab-cursor --fullscreen --prefer-vk-device 1002 \
-  --adaptive-sync --filter fsr --expose-wayland --mangoapp \
-  -- env STEAM_ENABLE_WAYLAND_BROWSER=1 %command%
+gamemoderun steam
+# Or for specific games:
+gamemoderun mangohud %command%
 ```
 
-**Space Simulations** (Elite Dangerous, Star Citizen):
-```bash
-gamemoderun mangohud env RADV_PERFTEST=aco,sam,nggc,RT %command%
-```
+#### **Hardware Support**
 
-**Competitive Gaming** (CS2, Valorant):
-```bash
-gamemoderun env RADV_DEBUG=nocompute %command%
-```
-
-#### **Anti-Aliasing Options**
-
-- **TSR (Temporal Super Resolution)**: Available in supported games
-- **SMAA**: Lower VRAM usage option
-- **MSAA 4x**: Traditional anti-aliasing option
-
-#### **USB Hardware Support**
-
-**ASUS ROG Device Integration**:
+**USB Gaming Peripherals**:
 ```nix
-# ASUS ROG hardware (AIO coolers, keyboards, RGB devices)
+# Gaming device support (Xbox controllers, ASUS ROG devices)
 services.udev.extraRules = ''
-  SUBSYSTEM=="usb", ATTRS{idVendor}=="0b05", TAG+="uaccess"
   KERNEL=="hidraw*", MODE="0664", GROUP="input"
+  SUBSYSTEM=="usb", ATTRS{idVendor}=="0b05", TAG+="uaccess"
 '';
-# Hardware access permissions
+# User permissions for hardware access
 users.users.chris.extraGroups = [ "wheel" "audio" "video" "plugdev" "input" ];
 ```
 
-#### **Configuration Results**
+### COSMIC Desktop Environment
 
-- **CPU**: Topology optimization and GameMode core binding implemented
-- **GPU**: RADV features and async shader compilation enabled
-- **Memory**: VM parameters tuned for 64GB systems
-- **Storage**: Btrfs compression and SSD optimization configured
-- **Browser**: Wayland Steam overlay functionality working
-
-### Key Bindings
-
-* **Modifier**: Super (Mod4) key
-* **Terminal**: `Super+Enter` (Alacritty)
-* **Launcher**: `Super+d` (wofi)
-* **Lock Screen**: `Super+Delete` (Noctalia IPC)
-* **Screenshots**: `Print` (full) / `Shift+Print` (selection)
-* **Media**: Hardware keys + `Super+p/[/]` alternatives
+* **Desktop Environment**: COSMIC with built-in tiling window manager
+* **Display Manager**: COSMIC Greeter for login
+* **Performance**: System76 scheduler for desktop responsiveness
+* **Workspaces**: Dynamic workspace management with COSMIC-specific navigation
+* **Applications**: COSMIC application launcher and window management
 
 ---
 
@@ -433,51 +399,34 @@ sudo nixos-rebuild switch --rollback
 
 # 🧪 Debugging & Validation
 
-### Test lock screen functionality:
-
-```sh
-# Manual lock test
-qs ipc --id $(qs list --all | head -1 | grep -o "Instance [^:]*" | cut -d" " -f2 | head -c2) call lockScreen lock
-```
-
-### Validate Sway config:
-
-```sh
-sway --validate
-```
-
 ### Validate Home Manager:
 
 ```sh
 home-manager build
 ```
 
-### Check Noctalia status:
-
-```sh
-# List Noctalia instances
-qs list --all
-
-# Check if Noctalia is running
-systemctl --user status noctalia-shell
-```
-
 ### Validate the flake:
 
 ```sh
-nix flake check
+nix flake check /etc/nixos
 ```
 
-### Check greeter logs:
+### Check COSMIC Greeter logs:
 
 ```sh
-journalctl -u greetd -b
+journalctl -u cosmic-greeter -b
 ```
 
-### Check user session env:
+### Check COSMIC session:
 
 ```sh
-systemctl --user show-environment
+systemctl --user status cosmic-session
+```
+
+### Validate configuration before applying:
+
+```sh
+sudo nixos-rebuild dry-build --flake /etc/nixos#desktop-nixos
 ```
 
 ---
@@ -568,18 +517,12 @@ To add a new module:
 
 # 🔒 Security Features
 
-### Lock Screen Integration
+### System Security
 
-* **Auto-lock**: Automatically locks after login (3-second delay)
-* **Triggers**: Lid close, power button, manual activation
-* **Authentication**: PAM integration for secure unlock
-* **IPC Control**: Lock/unlock via Noctalia IPC commands
-
-### Key Binding
-
-```
-Super+Delete    # Lock screen immediately
-```
+* **GPG Agent**: User-level GPG agent with GTK2 pinentry
+* **Unfree Package Control**: Explicit allowlist for non-free software (Discord)
+* **WiFi Security**: Power management disabled to prevent connection issues
+* **Hardware Permissions**: Controlled access to USB devices and gaming peripherals
 
 ---
 
@@ -609,9 +552,9 @@ Super+Delete    # Lock screen immediately
 This configuration includes:
 
 * **Modular Design**: Separated concerns for system, user, and package management
-* **Hardware Tuning**: Configurations specific to Ryzen 9950X + RX 9070 XT + 64GB RAM
-* **Wayland Focus**: Native Wayland applications and compatibility
-* **Visual Effects**: SwayFX compositor with blur, shadows, and rounded corners
+* **COSMIC Desktop**: System76's COSMIC Desktop Environment with tiling window manager
+* **Gaming Focus**: Steam integration with Wayland support and hardware acceleration
+* **Hardware Optimization**: AMD CPU/GPU optimizations and gaming-specific kernel parameters
 * **Stable Base**: NixOS 25.05 stable with selective unstable packages
 
 ---
@@ -646,7 +589,7 @@ This configuration is designed to work with **Claude Code** as a system administ
 **Configuration Validation:**
 ```bash
 # Multiple validation methods available
-sway --validate                    # Validate Sway configuration
+sudo nixos-rebuild dry-build --flake /etc/nixos#desktop-nixos  # Validate system config
 home-manager build                 # Validate Home Manager
 nix flake check /etc/nixos        # Check flake syntax
 ```
