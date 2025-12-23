@@ -60,8 +60,10 @@
     # Additional WiFi stability parameters
     "iwlwifi.power_scheme=1"  # Force active power scheme
     "iwlwifi.bt_coex_active=0"  # Disable Bluetooth coexistence
-    # Prevent system from entering deep sleep that affects PCIe devices
-    "intel_idle.max_cstate=1"  # Limit CPU C-states for PCIe stability
+    # Suspend mode configuration - use s2idle for better wake compatibility
+    "mem_sleep_default=s2idle"
+    # Limit CPU C-states but allow some power saving
+    "intel_idle.max_cstate=2"
     "acpi_osi=\"!Windows 2012\""  # Force better ACPI compatibility
     # Removed problematic parameters that interfere with WiFi detection:
     # - mitigations=off (security risk)
@@ -75,6 +77,17 @@
   
   # CPU frequency scaling for gaming
   powerManagement.cpuFreqGovernor = "performance";
+  
+  # Suspend/resume configuration
+  powerManagement.enable = true;
+  powerManagement.resumeCommands = ''
+    # Restart network manager to fix WiFi issues after resume
+    systemctl restart NetworkManager
+    # Reset USB devices that may have issues
+    for i in /sys/bus/pci/drivers/*/unbind; do
+      [[ -e "$i" ]] && echo "0000:$(basename $(dirname $i))" > "$i" 2>/dev/null || true
+    done
+  '';
   
   # Enable CPU microcode updates (AMD)
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

@@ -15,14 +15,6 @@
   # Recommended system services for Noctalia (NetworkManager and Bluetooth already enabled in desktop.nix)
   services.power-profiles-daemon.enable = true;
   services.upower.enable = true;
-  
-  # Prevent power-profiles-daemon from managing WiFi power
-  systemd.services.power-profiles-daemon.serviceConfig = {
-    ExecStart = [
-      ""  # Clear default
-      "${pkgs.power-profiles-daemon}/bin/power-profiles-daemon --disable-power-save-blocking"
-    ];
-  };
 
   # Enable XWayland support for compatibility
   programs.xwayland.enable = true;

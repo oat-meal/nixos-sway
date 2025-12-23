@@ -234,16 +234,6 @@
           # Default to horizontal splits for Niri-like column behavior
           swaymsg "default_orientation horizontal"
         ''}"; }
-        # Lock screen after startup for security
-        { command = "${pkgs.writeScript "auto-lock" ''
-          #!/bin/sh
-          # Wait for noctalia to fully load then lock screen
-          sleep 3
-          instance_id=$(qs list --all | head -1 | grep -o "Instance [^:]*" | cut -d" " -f2 | head -c2)
-          if [ -n "$instance_id" ]; then
-            qs ipc --id "$instance_id" call lockScreen lock
-          fi
-        ''}"; }
       ];
       
       # Window rules for better Niri-like experience

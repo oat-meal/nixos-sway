@@ -86,5 +86,35 @@
     enable = true;
     systemd.enable = true;
   };
+
+  # Fix Noctalia service environment and startup issues
+  systemd.user.services.noctalia-shell = {
+    # Correct systemd service configuration
+    Service = {
+      # Clean up stale QuickShell runtime files before starting
+      ExecStartPre = "${pkgs.writeShellScript "noctalia-cleanup" ''
+        #!/bin/sh
+        # Remove stale QuickShell symlinks that cause startup failures
+        rm -rf /run/user/$UID/quickshell/by-path/* 2>/dev/null || true
+        rm -rf /run/user/$UID/quickshell/by-shell/* 2>/dev/null || true
+      ''}";
+      
+      # Restart on failure to handle Wayland connection issues
+      Restart = "on-failure";
+      RestartSec = "2s";
+      
+      # Comprehensive PATH for Noctalia with all required tools
+      Environment = [
+        "PATH=${pkgs.coreutils}/bin:${pkgs.systemd}/bin:${pkgs.gnugrep}/bin:${pkgs.findutils}/bin:${pkgs.gnused}/bin:${pkgs.gawk}/bin:${pkgs.bash}/bin:${pkgs.sway}/bin:${pkgs.networkmanager}/bin:${pkgs.fontconfig}/bin:${pkgs.util-linux}/bin:/home/chris/.nix-profile/bin:/run/current-system/sw/bin"
+      ];
+    };
+
+    # Ensure proper startup order
+    Unit = {
+      # Wait for graphical session target
+      After = [ "graphical-session.target" ];
+    };
+  };
+
 }
 

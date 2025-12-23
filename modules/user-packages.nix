@@ -17,7 +17,6 @@
     firefox
     brave
     mpv
-
     ######## User tools ########
     wl-clipboard
     unzip
